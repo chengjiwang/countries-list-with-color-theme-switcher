@@ -1,4 +1,5 @@
 import CountryList from "@/components/CountryList";
+import getCodeListsOptions from "@/query/getCodeListsOptions";
 import getSearchNameOptions from "@/query/getSearchNameOptions";
 import formatNumber from "@/utils/formatNumber";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
@@ -12,13 +13,20 @@ import {
   Typography,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 
 export default function Detail() {
   const { countryName } = useParams();
+  const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery(
     getSearchNameOptions(countryName)
   );
+
+  const borders = data?.[0]?.borders || [];
+  const bordersQuery = useQuery({
+    ...getCodeListsOptions(borders),
+    enabled: borders.length > 0,
+  });
 
   if (isLoading) {
     return (
@@ -81,36 +89,75 @@ export default function Detail() {
           </Grid>
 
           <Grid size={{ xs: 12, lg: 6 }}>
-            <Typography
-              variant="h6"
-              component="h2"
-              sx={{ fontWeight: 800, my: 4 }}
-            >
-              {data[0].name.common}
-            </Typography>
+            <Stack spacing={4}>
+              <Typography variant="h6" component="h2" sx={{ fontWeight: 800 }}>
+                {data[0].name.common}
+              </Typography>
 
-            <Grid container spacing={6}>
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Stack direction="column" spacing={1}>
-                  <CountryList name="Native Name" value={firstNativeName} />
-                  <CountryList
-                    name="Population"
-                    value={formatNumber(data[0].population)}
-                  />
-                  <CountryList name="Region" value={data[0].region} />
-                  <CountryList name="Sub Region" value={data[0].subregion} />
-                  <CountryList name="Capital" value={data[0].capital[0]} />
-                </Stack>
+              <Grid container spacing={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Stack direction="column" spacing={1}>
+                    <CountryList name="Native Name" value={firstNativeName} />
+                    <CountryList
+                      name="Population"
+                      value={formatNumber(data[0].population)}
+                    />
+                    <CountryList name="Region" value={data[0].region} />
+                    <CountryList name="Sub Region" value={data[0].subregion} />
+                    <CountryList name="Capital" value={data[0].capital[0]} />
+                  </Stack>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <Stack direction="column" spacing={1}>
+                    <CountryList
+                      name="Top level domain"
+                      value={data[0].tld[0]}
+                    />
+                    <CountryList name="Currencies" value={currencies} />
+                    <CountryList name="Languages" value={languages} />
+                  </Stack>
+                </Grid>
               </Grid>
 
-              <Grid size={{ xs: 12, md: 6 }}>
-                <Stack direction="column" spacing={1}>
-                  <CountryList name="Top level domain" value={data[0].tld[0]} />
-                  <CountryList name="Currencies" value={currencies} />
-                  <CountryList name="Languages" value={languages} />
-                </Stack>
-              </Grid>
-            </Grid>
+              <Stack
+                spacing={1}
+                direction={{ xs: "column", md: "row" }}
+                sx={{
+                  alignItems: {
+                    md: "center",
+                  },
+                }}
+              >
+                <Typography sx={{ fontWeight: 600, minWidth: 140 }}>
+                  Border Countries:
+                </Typography>
+
+                {borders.length > 0 ? (
+                  <Grid container spacing={1}>
+                    {bordersQuery.data?.map((border) => {
+                      return (
+                        <Button
+                          key={border.name.common}
+                          variant="outlined"
+                          sx={{
+                            color: "text.primary",
+                            borderColor: "text.primary",
+                          }}
+                          onClick={() =>
+                            navigate(`/details/${border.name.common}`)
+                          }
+                        >
+                          {border.name.common}
+                        </Button>
+                      );
+                    })}
+                  </Grid>
+                ) : (
+                  <Typography>No border countries</Typography>
+                )}
+              </Stack>
+            </Stack>
           </Grid>
         </Grid>
       </Stack>
