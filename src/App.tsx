@@ -1,17 +1,26 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import Detail from "./pages/detail";
 import Home from "./pages/home";
 import RootLayout from "./pages/Root";
 import theme from "./theme";
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <RootLayout />,
+      children: [
+        { path: "/", element: <Home /> },
+        { path: "/details/:countryName", element: <Detail /> },
+      ],
+    },
+  ],
   {
-    path: "/",
-    element: <RootLayout />,
-    children: [{ path: "/", element: <Home /> }],
-  },
-]);
+    basename: "/countries-list-with-color-theme-switcher",
+  }
+);
 
 const queryClient = new QueryClient();
 
@@ -20,7 +29,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme} defaultMode="light">
         <CssBaseline />
-        <RouterProvider router={router} />
+        <RouterProvider
+          router={router}
+          // basename="/countries-list-with-color-theme-switcher"
+        />
       </ThemeProvider>
     </QueryClientProvider>
   );

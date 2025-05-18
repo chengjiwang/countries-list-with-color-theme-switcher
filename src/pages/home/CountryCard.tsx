@@ -2,6 +2,7 @@ import CountryList from "@/components/CountryList";
 import formatNumber from "@/utils/formatNumber";
 import { Card, CardContent, CardMedia, Stack, Typography } from "@mui/material";
 import { memo } from "react";
+import { useNavigate } from "react-router";
 import { Country } from "./type";
 
 type CountryCardProps = {
@@ -9,8 +10,13 @@ type CountryCardProps = {
 };
 
 function CountryCard({ country }: CountryCardProps) {
+  const navigate = useNavigate();
+
   return (
-    <Card>
+    <Card
+      onClick={() => navigate(`/details/${country.name.common}`)}
+      sx={{ cursor: "pointer" }}
+    >
       <CardMedia
         component="img"
         sx={{ height: 180 }}

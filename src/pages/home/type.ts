@@ -32,4 +32,5 @@ export type Country = {
     [key: string]: string;
   };
   population: number;
+  borders?: string[];
 };
