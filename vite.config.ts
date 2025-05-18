@@ -4,6 +4,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/countries-list-with-color-theme-switcher/",
   server: {
     open: true,
   },

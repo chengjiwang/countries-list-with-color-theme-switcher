@@ -1,4 +1,4 @@
-import { api } from "@/utils/api";
+import getCountriesOptions from "@/query/getCountriesOptions";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
@@ -15,23 +15,9 @@ import {
   TextField,
   useTheme,
 } from "@mui/material";
-import { queryOptions, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import CountryCard from "./CountryCard";
-import { Country } from "./type";
-
-function getCountriesOptions() {
-  return queryOptions({
-    queryKey: ["country"],
-    queryFn: async () => {
-      return (
-        await api.get<Country[]>(
-          "/all?fields=name,flags,population,region,subregion,capital,currencies,languages,tld"
-        )
-      ).data;
-    },
-  });
-}
 
 export default function Home() {
   const theme = useTheme();
